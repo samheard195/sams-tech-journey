@@ -1,0 +1,60 @@
+//This script will query the roster in Deputy and find all shifts that do not have a linked timesheet.
+//for each result it will then create a new timesheet in Deputy using the details of the queried schedule object.
+
+//This is a much faster way of importing roster details into the timesheets and approving them one by one.
+
+//Great for setting up demos and testing pay details for new instance builds
+
+//SCRIPT STARTS HERE
+
+
+$.ajax({
+    url: '/api/v1/resource/Roster/QUERY'
+    , type: 'POST'
+    , data: JSON.stringify(
+        {
+            search: {
+                f1: {field:'MatchedByTimesheet', type:'eq', data:0}
+                // ,f2: {field:'', type:'', data:''}
+            }, max: 500, join: [], assoc: []
+        }
+    )
+    , success: function(mixreply) {
+        if(mixreply.length === 0){console.log('no object found')}else{
+            console.log('Query Successful');
+            console.log(mixreply);
+            _.each(mixreply, function(objReturn){
+                console.log("Timesheet created for shift"+ " "+ +objReturn.Id);
+
+
+                $.ajax({
+                    url: '/api/v1/supervise/timesheet/update' 
+                    , type: 'Post'
+                    , async: false
+                    , data: JSON.stringify({ 
+                        intEmployeeId: +objReturn.Employee,
+                        intRosterId: +objReturn.Id,
+                        intOpUnitId: +objReturn.OperationalUnit,
+                        intStartTimestamp: +objReturn.StartTimeLocalized,
+                        intEndTimestamp: +objReturn.EndTimeLocalized,
+                        blnApprovedTimesheet: true,
+                        strComment: "This timesheet was created using a query",
+                        arrSlots: [{
+                            blnEmptySlot: false,
+                            strState: +objReturn.strState,
+                            strType: +objReturn.strType,
+                            intStart: +objReturn.intStart,
+                            intEnd: +objReturn.intEnd,
+                            strTypeName: +objReturn.strTypeName
+                                }]
+                             })
+                         })
+                    })
+        
+            }
+        }
+        ,error: function(mixreply) {console.log('Failed to create timesheet');}
+     ,error: function(mixerror) {console.log('Query Failed, see error details below:');console.log(mixerror);
+     }
+    , complete: function(mixreply) {console.log('AJAX Completed');}
+    });
