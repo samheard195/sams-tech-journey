@@ -1,0 +1,24 @@
+// a function to de activate employee agreements within Deputy.  Please use the exporter to identify the IDs of any agreements to deactivate
+
+//Step1 - paste the full function into your console
+//Step2 - paste the call example here, 127 is the employee's agreement ID, please add the ID to deactivate 'deactivatePayDetail(127)'
+
+
+//PASTE THIS FIRST THEN GO TO STEP 2
+
+function deactivatePayDetail(agreementId){
+$.ajax({
+    url: '/api/v1/resource/EmployeeAgreement/'+agreementId
+    , type: 'POST'
+    , data: JSON.stringify({
+        Active: false
+    })
+, success: function(mixreply) {
+    console.log('success'); 
+    console.log(mixreply);
+}
+, error: function(mixerror) { 
+    console.log('error'); 
+    console.log(mixerror);
+}}
+)};
