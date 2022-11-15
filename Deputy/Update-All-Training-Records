@@ -1,0 +1,30 @@
+//A call to update the date of all Deputy training tags in a Deputy instance.
+
+
+
+$.ajax({
+    url: '/api/v1/resource/TrainingRecord/QUERY'
+    , type: 'POST'
+    , data: JSON.stringify(
+        {
+            search: {
+                f1: {field:'Id', type:'ge', data:'0'}
+
+            }, max: 500, join: [], assoc: []
+        }
+    )
+    , success: function(mixreply) {
+        if(mixreply.length === 0){console.log('no object found')}else{
+            console.log('Query Successful');
+            console.log(mixreply);
+            _.each(mixreply, function(objReturn){
+            //update the date in the post call below or edit the call using the resources on developer.deputy.com and going to 'training records'
+                $.post('api/v1/resource/TrainingRecord/'+objReturn.Id, JSON.stringify ({ExpiryDate: "2032-10-12T00:00:00+01:00"}),_client_log)
+
+
+            })
+        }
+    }
+    , error: function(mixerror) {console.log('Query Failed, see error details below:');console.log(mixerror);}
+    , complete: function() {console.log('AJAX Completed');}
+});
