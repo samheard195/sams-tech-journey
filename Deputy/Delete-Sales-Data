@@ -1,0 +1,28 @@
+//Deleting sales data in Deputy.
+//query below is using the operational unit to search, to see other properties go to developer.deputy.com and go to the SalesData resource
+
+
+$.ajax({
+    url: '/api/v1/resource/SalesData/QUERY'
+    , type: 'POST'
+    , data: JSON.stringify(
+        {
+            search: {
+                f1: {field:'OperationalUnit', type:'eq', data:'97'}
+            }, max: 15, join: [], assoc: []
+        }
+    )
+    , success: function(mixreply) {
+        if(mixreply.length === 0){console.log('no object found')}else{
+            console.log('Query Successful');
+            console.log(mixreply);
+            _.each(mixreply, function(objReturn){
+                $.ajax({url:'/api/v1/resource/SalesData/'+objReturn.Id, data:null, method:'DELETE' , success:function(objReturn){console.log(objReturn)}});
+
+
+            })
+        }
+    }
+    , error: function(mixerror) {console.log('Query Failed, see error details below:');console.log(mixerror);}
+    , complete: function() {console.log('AJAX Completed');}
+});
