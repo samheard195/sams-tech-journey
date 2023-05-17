@@ -1,0 +1,30 @@
+//Sam note - this is a query template that will also create a variable.  you can then use the "; CSV" script using the function 'ExportToCSV(VarExport)' to export the results
+var VarExport = []
+    $.ajax({
+    url: '/api/v1/resource/**ENDPOINT**/QUERY'
+    , type: 'POST'
+    , data: JSON.stringify(
+        {
+            search: {
+                f1: {field:'Id', type:'ne', data:0},
+                //f2: {field:'PROPERTY', type:'ne', data:1},
+                //f3: {field:'PROPERTY', type:'ne', data:1},
+
+
+            }, max: 1000, join: [], assoc: []
+        }
+    )
+    , success: function(mixreply) {
+        if(mixreply.length === 0){console.log('no object found')}else{
+            console.log('Query Successful');
+            console.log(mixreply);
+            VarExport = mixreply;
+            _.each(mixreply, function(objReturn){
+               //if you want to add a post for each line then create your $.post or $.ajax call here and use the obj.return
+
+            })
+        }
+    }
+    , error: function(mixerror) {console.log('Query Failed, see error details below:');console.log(mixerror);}
+    , complete: function() {console.log('AJAX Completed');}
+});
